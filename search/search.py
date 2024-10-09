@@ -133,7 +133,30 @@ def depth_first_search(problem):
     print("Start's successors:", problem.get_successors(problem.get_start_state()))
     """
     "*** YOUR CODE HERE ***"
-    util.raise_not_defined()
+    # Initialize the frontier and expandedNodes
+    frontier = util.Stack()
+    start_state = problem.get_start_state()
+    # Define node as a tuple with the state and the actions to reach it
+    node = SearchNode(None, (start_state, None, 0))
+    frontier.push((start_state, []))
+    expandedNodes = set()
+
+
+    # While there are nodes in the frontier
+    while True:
+        if frontier.is_empty():
+            return False
+        current_state, actions = frontier.pop()
+        if problem.is_goal_state(current_state):
+            return actions
+        if current_state not in expandedNodes:
+            expandedNodes.add(current_state)
+            for successor, action, step_cost in problem.get_successors(current_state):
+                if successor not in expandedNodes:
+                    new_actions = actions + [action]
+                    frontier.push((successor, new_actions))
+    
+    return False
 
 
 
