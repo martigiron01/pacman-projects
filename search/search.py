@@ -133,31 +133,44 @@ def depth_first_search(problem):
     print("Start's successors:", problem.get_successors(problem.get_start_state()))
     """
     "*** YOUR CODE HERE ***"
-    # Initialize the frontier and expandedNodes
+    # Initialize the Stack 
     frontier = util.Stack()
-    start_state = problem.get_start_state()
-    # Define node as a tuple with the state and the actions to reach it
-    node = SearchNode(None, (start_state, None, 0))
-    frontier.push((start_state, []))
+    
+    # Initialize the first node
+    node = SearchNode(None, (problem.get_start_state(), None, 0))
+    
+    # Push the first node to the frontier
+    frontier.push(node)
+    
+    # Initialize the set of expanded
     expandedNodes = set()
-
 
     # While there are nodes in the frontier
     while True:
         if frontier.is_empty():
             return False
-        current_state, actions = frontier.pop()
+        
+        # Pop the node from the frontier    
+        current_node = frontier.pop()
+        current_state = current_node.state
+        
+        # If the current node is the goal state, return the path
         if problem.is_goal_state(current_state):
-            return actions
+            return current_node.get_path()
+        
+        # If the current state has not been expanded yet    
         if current_state not in expandedNodes:
-            expandedNodes.add(current_state)
+            # Add the current state to the set of expanded states
+            expandedNodes.add(current_state)    
+            
+            # For each successor of the current state
             for successor, action, step_cost in problem.get_successors(current_state):
+                # If the successor has not been expanded yet
                 if successor not in expandedNodes:
-                    new_actions = actions + [action]
-                    frontier.push((successor, new_actions))
-    
+                    # Create a new node with the successor and add it to the frontier
+                    child_node = SearchNode(current_node, (successor, action, step_cost))
+                    frontier.push(child_node)
     return False
-
 
 
 def breadth_first_search(problem):
