@@ -267,7 +267,53 @@ def null_heuristic(state, problem=None):
 def a_star_search(problem, heuristic=null_heuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    util.raise_not_defined()
+    # Initialize the Priority Queue
+    frontier = util.PriorityQueue()
+    
+    # Initialize the first node and the function f(n) = g(n) + h(n)
+    node = SearchNode(None, (problem.get_start_state(), None, 0))
+    fValue = node.cost + heuristic(node.state, problem)
+    
+    # Push the first node and the function f(n) to the frontier for the priority queue
+    frontier.push(node, fValue)
+    
+    # Initialize the set of expanded
+    expandedNodes = set()
+
+    # While there are nodes in the frontier
+    while True:
+        if frontier.is_empty():
+            return False
+        
+        # Pop the node from the frontier    
+        current_node = frontier.pop()
+        current_state = current_node.state
+        
+        # If the current node is the goal state, return the path
+        if problem.is_goal_state(current_state):
+            return current_node.get_path()
+        
+        # If the current state has not been expanded yet    
+        if current_state not in expandedNodes:
+            # Add the current state to the set of expanded states
+            expandedNodes.add(current_state)
+            
+            # For each successor of the current state
+            for successor, action, step_cost in problem.get_successors(current_state):
+                # Calculate the accumulated cost 
+                gValue = current_node.cost + step_cost
+
+                # Create a new node with the successor and the accumulated cost
+                child_node = SearchNode(current_node, (successor, action, step_cost))
+                child_node.cost = gValue
+                
+                fValue = child_node.cost + heuristic(child_node.state, problem)
+                
+                # If the successor has not been expanded yet
+                if successor not in expandedNodes:
+                    # Push the node to the frontier
+                    frontier.push(child_node, fValue)
+    return False
 
 # Abbreviations
 bfs = breadth_first_search
