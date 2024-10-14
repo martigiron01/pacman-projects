@@ -300,13 +300,13 @@ def a_star_search(problem, heuristic=null_heuristic):
             
             # For each successor of the current state
             for successor, action, step_cost in problem.get_successors(current_state):
-                # Calculate the accumulated cost 
-                gValue = current_node.cost + step_cost
-
-                # Create a new node with the successor and the accumulated cost
+                # Create a new node with the successor 
                 child_node = SearchNode(current_node, (successor, action, step_cost))
-                child_node.cost = gValue
                 
+                # Update the cost of the node g(n)
+                child_node.cost = current_node.cost + step_cost
+                
+                # Calculate the cost of the heuristic f(n) = g(n) + h(n)
                 fValue = child_node.cost + heuristic(child_node.state, problem)
                 
                 # If the successor has not been expanded yet
