@@ -294,6 +294,7 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
         "*** YOUR CODE HERE ***"
+        # The state is a tuple ( pacman_position, corners_reached )
         self.start_state = (self.startingPosition, (False, False, False, False))
 
     def get_start_state(self):
@@ -390,11 +391,34 @@ def corners_heuristic(state, problem):
     shortest path from the state to a goal of the problem; i.e.  it should be
     admissible (as well as consistent).
     """
-    corners = problem.corners # These are the corner coordinates
-    walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+    current_position, visited_corners = state
+    
+    # Initialize an empty list for unvisited corners
+    unvisited_corners = []
+
+    # Loop through the corners and the visited_corners to find unvisited corners
+    for i, corner in enumerate(problem.corners):
+        if not visited_corners[i]:  # Check if the corner has not been visited
+            unvisited_corners.append(corner)  # Add to the list of unvisited corners
+
+    # If all corners have been visited, no cost is remaining
+    if not unvisited_corners:
+        return 0
+
+    # Initialize the heuristic value
+    heuristic_value = 0
+
+    # While there are unvisited corners, find the nearest corner and accumulate distance
+    current_position = current_position
+    while unvisited_corners:
+        # Use nearest_corner to find the distance to the nearest unvisited corner
+        dist, nearest = nearest_corner(current_position, unvisited_corners)
+        heuristic_value += dist
+        current_position = nearest  # Move to the nearest corner
+
+    return heuristic_value
 
 class AStarCornersAgent(SearchAgent):
     """A SearchAgent for FoodSearchProblem using A* and your food_heuristic"""
