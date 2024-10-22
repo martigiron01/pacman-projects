@@ -569,8 +569,22 @@ def food_heuristic(state, problem):
     problem.heuristic_info['wallCount']
     """
     position, food_grid = state
-    "*** YOUR CODE HERE ***"
-    return 0
+    food_list = food_grid.as_list()
+
+    # Si no hay comida, el costo es 0
+    if not food_list:
+        return 0
+
+    # Calcular la distancia mínima a la comida más cercana
+    min_distance = min(util.manhattan_distance(position, food) for food in food_list)
+
+    # Calcular la distancia máxima a la comida restante
+    max_distance = max(util.manhattan_distance(food1, food2) for food1 in food_list for food2 in food_list)
+
+    # La heurística es la suma de la distancia mínima y la distancia máxima
+    heuristic_value = min_distance + max_distance
+
+    return heuristic_value
 
 
 def simplified_corners_heuristic(state, problem):
