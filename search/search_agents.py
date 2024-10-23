@@ -569,25 +569,6 @@ def food_heuristic(state, problem):
     problem.heuristic_info['wallCount']
     """
     position, food_grid = state
-<<<<<<< Updated upstream
-    food_list = food_grid.as_list()
-
-    # Si no hay comida, el costo es 0
-    if not food_list:
-        return 0
-
-    # Calcular la distancia mínima a la comida más cercana
-    min_distance = min(util.manhattan_distance(position, food) for food in food_list)
-
-    # Calcular la distancia máxima a la comida restante
-    max_distance = max(util.manhattan_distance(food1, food2) for food1 in food_list for food2 in food_list)
-
-    # La heurística es la suma de la distancia mínima y la distancia máxima
-    heuristic_value = min_distance + max_distance
-
-    return heuristic_value
-
-=======
     "*** YOUR CODE HERE ***"
     food_list = food_grid.as_list()
     
@@ -609,7 +590,6 @@ def food_heuristic(state, problem):
     heuristic_value = min_dist + max_dist
     
     return heuristic_value
->>>>>>> Stashed changes
 
 def simplified_corners_heuristic(state, problem):
     """
@@ -663,7 +643,8 @@ class ClosestDotSearchAgent(SearchAgent):
         problem = AnyFoodSearchProblem(game_state)
 
         "*** YOUR CODE HERE ***"
-        util.raise_not_defined()
+        return search.bfs(problem)
+        
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -700,7 +681,8 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         x,y = state
 
         "*** YOUR CODE HERE ***"
-        util.raise_not_defined()
+        if self.food[x][y]:
+            return True
 
 def maze_distance(point1, point2, game_state):
     """
