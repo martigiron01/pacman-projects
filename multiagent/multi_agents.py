@@ -74,7 +74,28 @@ class ReflexAgent(Agent):
         new_scared_times = [ghostState.scared_timer for ghostState in new_ghost_states]
         
         "*** YOUR CODE HERE ***"
-        return successor_game_state.get_score()
+        # new_food is a Grid object, so we need to get the list of food positions
+        food_positions = new_food.as_list()
+
+        # Calculate the closest food distance
+        closest_food_distance = float('inf')
+        for food_position in food_positions:
+            distance = manhattan_distance(new_pos, food_position)
+            if distance < closest_food_distance:
+                closest_food_distance = distance
+
+        # Calculate the closest ghost distance
+        closest_ghost_distance = float('inf')
+        for ghost_state in new_ghost_states:
+            distance = manhattan_distance(new_pos, ghost_state.get_position())
+            if distance < closest_ghost_distance:
+                closest_ghost_distance = distance
+        
+        
+        # Calculate score based on distances
+        score = closest_food_distance - closest_ghost_distance
+
+        return score
 
 def score_evaluation_function(current_game_state):
     """
