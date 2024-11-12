@@ -171,7 +171,53 @@ class MinimaxAgent(MultiAgentSearchAgent):
         Returns whether or not the game state is a losing state
         """
         "*** YOUR CODE HERE ***"
-        util.raise_not_defined()
+        # We define a recursive function to calculate the minimax algorithm (both cases min and max)
+        def minimax(game_state, depth, agent_index):
+
+            # We check if the game finished or we reached the depth 0
+            if game_state.is_win() or game_state.is_lose() or depth == 0:
+                return self.evaluation_function(game_state)
+
+            num_agents = game_state.get_num_agents()
+
+            if agent_index == 0:  # Pacman turn (maximizing value)
+                best_score = float('-inf')
+                for action in game_state.get_legal_actions(agent_index):
+                    successor_game_state = game_state.generate_successor(agent_index, action)
+                    score = minimax(successor_game_state, depth, 1)
+                    best_score = max(best_score, score)
+                return best_score
+            
+            else:  # Ghost turn (minimizing value)
+                best_score = float('inf')
+                next_agent_index = (agent_index + 1) % num_agents
+                next_depth = depth - 1 if next_agent_index == 0 else depth
+
+                for action in game_state.get_legal_actions(agent_index):
+                    successor_game_state = game_state.generate_successor(agent_index, action)
+                    score = minimax(successor_game_state, next_depth, next_agent_index)
+                    best_score = min(best_score, score)
+                return best_score
+        
+        # We now calculate the best action for Pacman
+        best_action = None
+        best_score = float('-inf')
+
+        # We iterate over all legal actions
+        for action in game_state.get_legal_actions(0):
+
+            # We calculate the succesor state
+            successor_game_state = game_state.generate_successor(0, action)
+
+            # We calculate the score for the succesor state
+            score = minimax(successor_game_state, self.depth, 1)
+
+            # We update the best action and score
+            if score > best_score:
+                best_score = score
+                best_action = action
+
+        return best_action
     
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
