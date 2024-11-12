@@ -74,21 +74,40 @@ class ReflexAgent(Agent):
         new_scared_times = [ghostState.scared_timer for ghostState in new_ghost_states]
         
         "*** YOUR CODE HERE ***"
-        food_list = new_food.as_list()
-        if len(food_list) > 0:
-            min_food_distance = min([manhattan_distance(new_pos, food) for food in food_list])
-        else:
-            min_food_distance = 0
-        
-        ghost_distances = [manhattan_distance(new_pos, ghost_state.get_position()) for ghost_state in new_ghost_states]
-        min_ghost_distance = min(ghost_distances)
-        
-        pacman_score = successor_game_state.get_score()
-        #Weights
-        food_weight = 10
-        ghost_weight = 3
 
-        score = pacman_score + ghost_weight * min_ghost_distance - food_weight * min_food_distance
+        # Initial score from successor state
+        score = successor_game_state.get_score()
+        
+        # We calculate the distances to all food
+        food_distances = [manhattan_distance(new_pos, food) for food in new_food.as_list()]
+
+        # Then we check the nearest one
+        if food_distances:
+            nearest_food_distance = min(food_distances)
+            # We increase score as closer to the nearest food
+            score += 1.0 / nearest_food_distance
+
+        # We iterate over all ghosts
+        for i in range(len(new_ghost_states)):
+            ghost = new_ghost_states[i]
+            scared_time = new_scared_times[i]
+
+            # We calculate distance to ghost
+            ghost_distance = manhattan_distance(new_pos, ghost.get_position())
+            
+            # We decrease score as closer to the not scared ghost
+            if scared_time == 0:
+                if ghost_distance > 0:  # Eviting division by zero errors
+                    score -= 2.0 / ghost_distance
+
+            # We increase score as closer to the scared ghost
+            elif scared_time > 0:
+                if ghost_distance > 0:
+                    score += 1.5 / ghost_distance
+
+
+        # We decrease score for each food item left as fewer food is better
+        score -= len(new_food.as_list())
 
         return score
 
