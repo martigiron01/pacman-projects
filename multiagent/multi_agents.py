@@ -230,6 +230,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         Returns the minimax action using self.depth and self.evaluation_function
         """
         "*** YOUR CODE HERE ***"
+        # We define a recursive function to calculate the minimax algorithm with alpha-beta
         def alpha_beta(game_state, depth, agent_index, alpha, beta):
 
             # Bases cases: We check if the game finished or we reached the depth 0
@@ -238,17 +239,21 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
 
             num_agents = game_state.get_num_agents()
 
-            if agent_index == 0:
+            if agent_index == 0: # Pacman turn (maximizing value)
                 best_score = float('-inf')
                 for action in game_state.get_legal_actions(agent_index):
                     successor_game_state = game_state.generate_successor(agent_index, action)
                     score = alpha_beta(successor_game_state, depth, 1, alpha, beta)
                     best_score = max(best_score, score)
+
+                    # We update alpha value
                     alpha = max(alpha, best_score)
+
+                    # If beta is less than alpha we stop the search
                     if beta < alpha:
                         break
                 return best_score
-            else:
+            else: # Ghost turn (minimizing value)
                 best_score = float('inf')
                 for action in game_state.get_legal_actions(agent_index):
                     successor_game_state = game_state.generate_successor(agent_index, action)
@@ -257,18 +262,30 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
                     else:
                         score = alpha_beta(successor_game_state, depth, agent_index + 1, alpha, beta)
                     best_score = min(best_score, score)
+
+                    # We update beta value
                     beta = min(beta, best_score)
+
+                    # If beta is less than alpha we stop the search
                     if beta < alpha:
                         break
                 return best_score
 
+        # We calculate the best action for Pacman
         best_action = None
         aplha = float('-inf')
         beta = float('inf')
 
+        # We iterate over all legal actions
         for action in game_state.get_legal_actions(0):      
+
+            # We calculate the succesor state
             successor_game_state = game_state.generate_successor(0, action)
+
+            # We calculate the score for the succesor state
             score = alpha_beta(successor_game_state, self.depth, 1, aplha, beta)
+
+            # We update the best action and score
             if score > aplha:
                 aplha = score
                 best_action = action
