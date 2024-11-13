@@ -174,7 +174,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
         # We define a recursive function to calculate the minimax algorithm (both cases min and max)
         def minimax(game_state, depth, agent_index):
 
-            # We check if the game finished or we reached the depth 0
+            # Bases cases: We check if the game finished or we reached the depth 0
             if game_state.is_win() or game_state.is_lose() or depth == 0:
                 return self.evaluation_function(game_state)
 
@@ -190,12 +190,12 @@ class MinimaxAgent(MultiAgentSearchAgent):
             
             else:  # Ghost turn (minimizing value)
                 best_score = float('inf')
-                next_agent_index = (agent_index + 1) % num_agents
-                next_depth = depth - 1 if next_agent_index == 0 else depth
-
                 for action in game_state.get_legal_actions(agent_index):
                     successor_game_state = game_state.generate_successor(agent_index, action)
-                    score = minimax(successor_game_state, next_depth, next_agent_index)
+                    if agent_index == num_agents - 1:  # Last ghost
+                        score = minimax(successor_game_state, depth - 1, 0)
+                    else:
+                        score = minimax(successor_game_state, depth, agent_index + 1)
                     best_score = min(best_score, score)
                 return best_score
         
@@ -230,8 +230,50 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         Returns the minimax action using self.depth and self.evaluation_function
         """
         "*** YOUR CODE HERE ***"
-        util.raise_not_defined()
+        def alpha_beta(game_state, depth, agent_index, alpha, beta):
 
+            # Bases cases: We check if the game finished or we reached the depth 0
+            if game_state.is_win() or game_state.is_lose() or depth == 0:
+                return self.evaluation_function(game_state)
+
+            num_agents = game_state.get_num_agents()
+
+            if agent_index == 0:
+                best_score = float('-inf')
+                for action in game_state.get_legal_actions(agent_index):
+                    successor_game_state = game_state.generate_successor(agent_index, action)
+                    score = alpha_beta(successor_game_state, depth, 1, alpha, beta)
+                    best_score = max(best_score, score)
+                    alpha = max(alpha, best_score)
+                    if beta < alpha:
+                        break
+                return best_score
+            else:
+                best_score = float('inf')
+                for action in game_state.get_legal_actions(agent_index):
+                    successor_game_state = game_state.generate_successor(agent_index, action)
+                    if agent_index == num_agents - 1:
+                        score = alpha_beta(successor_game_state, depth - 1, 0, alpha, beta)
+                    else:
+                        score = alpha_beta(successor_game_state, depth, agent_index + 1, alpha, beta)
+                    best_score = min(best_score, score)
+                    beta = min(beta, best_score)
+                    if beta < alpha:
+                        break
+                return best_score
+
+        best_action = None
+        aplha = float('-inf')
+        beta = float('inf')
+
+        for action in game_state.get_legal_actions(0):      
+            successor_game_state = game_state.generate_successor(0, action)
+            score = alpha_beta(successor_game_state, self.depth, 1, aplha, beta)
+            if score > aplha:
+                aplha = score
+                best_action = action
+        
+        return best_action
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
