@@ -64,6 +64,10 @@ def question3e():
     return answer_discount, answer_noise, answer_living_reward
     # If not possible, return 'NOT POSSIBLE'
 
+def question6():
+    return 'NOT POSSIBLE'
+    # If not possible, return 'NOT POSSIBLE'
+
 def question8():
     answer_epsilon = None
     answer_learning_rate = None
