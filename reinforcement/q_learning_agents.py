@@ -66,7 +66,13 @@ class QLearningAgent(ReinforcementAgent):
         if not legal_actions:
             return 0.0
         
-        return max(self.get_q_value(state, action) for action in legal_actions)
+        # We want to find the maximum Q value for the state among all legal actions 
+        max_value = float('-inf')
+        for action in legal_actions:
+          q_value = self.get_q_value(state, action)
+          if q_value > max_value:
+            max_value = q_value
+        return max_value
       
     def compute_action_from_q_values(self, state):
         """
@@ -79,9 +85,14 @@ class QLearningAgent(ReinforcementAgent):
         if not legal_actions:
             return None
         
-        max_value = self.compute_value_from_q_values(state)
-        best_actions = [action for action in legal_actions if self.get_q_value(state, action) == max_value]
-
+        # We want to find the action that has the maximum Q value for the state, so we store the best action(s) in a list
+        max_value = self.get_value(state)
+        best_actions = []
+        for action in legal_actions:
+            if self.get_q_value(state, action) == max_value: # If the Q value of the action is the same as the maximum Q value, we add it to the list
+              best_actions.append(action)
+        
+        # We return a random action because we want to break ties randomly
         return random.choice(best_actions)
 
     def get_action(self, state):
@@ -102,6 +113,7 @@ class QLearningAgent(ReinforcementAgent):
         if not legal_actions:
             return action
         
+        # We want to explore with probability epsilon and exploit with probability 1 - epsilon
         if util.flip_coin(self.epsilon):
             action = random.choice(legal_actions)
         else:
@@ -119,9 +131,13 @@ class QLearningAgent(ReinforcementAgent):
           it will be called on your behalf
         """
         "*** YOUR CODE HERE ***"
-        max_next_q_value = self.compute_value_from_q_values(next_state)
-
+        # We compute first the maximum Q value for the next state
+        max_next_q_value = self.get_value(next_state)
+        
+        # We calculate the sample value
         sample = reward + self.discount * max_next_q_value
+        
+        # We aplly the Q value update formula 
         self.q_values[(state, action)] = (1 - self.alpha) * self.get_q_value(state, action) + self.alpha * sample
 
     def get_policy(self, state):
